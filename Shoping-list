@@ -11,29 +11,46 @@ def get_items():
     return items
 
 def get_unique_and_repeats(items):
-    """Разделяет список на уникальные и повторяющиеся"""
-    unique = [] # Пустой список для уникальных товаров
-    repeats = [] # Пустой список для повторов
+    """Разделяет список на уникальные (все разные) и повторяющиеся"""
+    unique =    []    # Сюда попадут ВСЕ разные товары (по одному разу)
+    repeats =    []   # Сюда попадут товары, которые встречались > 1 раза
     
-    # Создаем список всех товаров в нижнем регистре для сравнения
+    # Вспомогательный список для сравнения без учета регистра
     items_lower = []
     for item in items:
         items_lower.append(item.lower())
 
-    # Проходим по каждому товару по очереди
+    # --- ЛОГИКА ДЛЯ UNIQUE (ГЛАВНОЕ ИСПРАВЛЕНИЕ) ---
+    # Идем по порядку и добавляем товар, если его еще нет в unique.
+    # Неважно, встретится ли он потом 10 раз. Главное — первое появление.
     for i in range(len(items)):
         current_item = items[i]
-        current_key = items_lower[i]  # Товар в нижнем регистре
+        current_key = items_lower[i]
         
-        # Считаем, сколько всего раз этот товар встречается
+        # Проверяем, есть ли уже такой товар в unique
+        is_already_in_unique = False
+        for existing_unique in unique:
+            if existing_unique.lower() == current_key:
+                is_already_in_unique = True
+                break
+        
+        if not is_already_in_unique:
+            unique.append(current_item)
+
+    # --- ЛОГИКА ДЛЯ REPEATS ---
+    # Отдельно считаем повторы.
+    for i in range(len(items)):
+        current_item = items[i]
+        current_key = items_lower[i]
+        
         count = 0
         for key in items_lower:
             if key == current_key:
                 count += 1
         
-        # --- ЛОГИКА ДЛЯ ПОВТОРОВ ---
+        # Если товар встречается больше 1 раза
         if count > 1:
-            # Проверяем, нет ли уже этого товара в списке повторов
+            # Проверяем, не добавили ли мы его уже в список повторов
             is_already_in_repeats = False
             for existing_repeat in repeats:
                 if existing_repeat.lower() == current_key:
@@ -42,20 +59,10 @@ def get_unique_and_repeats(items):
             
             if not is_already_in_repeats:
                 repeats.append(current_item)
-        
-        # --- ЛОГИКА ДЛЯ УНИКАЛЬНЫХ ---
-        else: 
-            # Проверяем, нет ли уже этого товара в списке уникальных
-            is_already_in_unique = False
-            for existing_unique in unique:
-                if existing_unique.lower() == current_key:
-                    is_already_in_unique = True
-                    break
-            
-            if not is_already_in_unique:
-                unique.append(current_item)
 
     return unique, repeats
+
+
 
 def main():
     items = get_items()
