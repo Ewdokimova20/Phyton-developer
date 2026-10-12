@@ -1,0 +1,85 @@
+def get_items():
+    """Считывает товары до пустой строки"""
+    items = []# Создаем пустой список для покупок
+    while True:
+        item = input().strip()
+        
+        if item == "":
+            break
+            
+        items.append(item)
+    return items
+
+def get_unique_and_repeats(items):
+    """Разделяет список на уникальные и повторяющиеся"""
+    unique = [] # Пустой список для уникальных товаров
+    repeats = [] # Пустой список для повторов
+    
+    # Создаем список всех товаров в нижнем регистре для сравнения
+    items_lower = []
+    for item in items:
+        items_lower.append(item.lower())
+
+    # Проходим по каждому товару по очереди
+    for i in range(len(items)):
+        current_item = items[i]
+        current_key = items_lower[i]  # Товар в нижнем регистре
+        
+        # Считаем, сколько всего раз этот товар встречается
+        count = 0
+        for key in items_lower:
+            if key == current_key:
+                count += 1
+        
+        # --- ЛОГИКА ДЛЯ ПОВТОРОВ ---
+        if count > 1:
+            # Проверяем, нет ли уже этого товара в списке повторов
+            is_already_in_repeats = False
+            for existing_repeat in repeats:
+                if existing_repeat.lower() == current_key:
+                    is_already_in_repeats = True
+                    break
+            
+            if not is_already_in_repeats:
+                repeats.append(current_item)
+        
+        # --- ЛОГИКА ДЛЯ УНИКАЛЬНЫХ ---
+        else: 
+            # Проверяем, нет ли уже этого товара в списке уникальных
+            is_already_in_unique = False
+            for existing_unique in unique:
+                if existing_unique.lower() == current_key:
+                    is_already_in_unique = True
+                    break
+            
+            if not is_already_in_unique:
+                unique.append(current_item)
+
+    return unique, repeats
+
+def main():
+    items = get_items()
+
+    # Обработка пустого ввода
+    if len(items) == 0:
+        print("Список покупок пуст. Ничего не добавлено.")
+        return
+
+    total_count = len(items)
+    unique_items, repeated_items = get_unique_and_repeats(items)
+
+    print(f"Общее число позиций: {total_count}")
+    
+    print("Список без повторов (в исходном порядке):")
+    for item in unique_items:
+        print(item)
+
+    if repeated_items:
+        print("Позиции, которые ввели больше одного раза:")
+        for item in repeated_items:
+            print(item)
+    else:
+        print("Повторов не найдено.")
+
+if __name__ == "__main__":
+    main()
